@@ -27,42 +27,29 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller numpy PyQt5 modbus-tk pillow pandas pyqtgraph
-
-      - name: Prepare icon
-        run: |
-          if [ "${{ runner.os }}" == "Windows" ]; then
-            python -c "from PIL import Image; img = Image.open('logo.png'); img.save('logo.ico')"
-            echo "ICON_FILE=logo.ico" >> $GITHUB_ENV
-          elif [ "${{ runner.os }}" == "macOS" ]; then
-            python -c "from PIL import Image; img = Image.open('logo.png'); img.save('logo.icns')"
-            echo "ICON_FILE=logo.icns" >> $GITHUB_ENV
-          else
-            echo "ICON_FILE=logo.png" >> $GITHUB_ENV
-          fi
-        shell: bash
+          pip install pyinstaller scipy numpy PyQt5 pandas pyqtgraph
 
       - name: Build executable
         run: |
-          pyinstaller --onefile --windowed --icon=${{ env.ICON_FILE }} --name=UIP main.py
+          pyinstaller --onefile --windowed --name=SJTUmat main.py
 
       - name: Compress and rename executable
         run: |
           cd dist
           if [ "${{ runner.os }}" == "Windows" ]; then
-            7z a -tzip UIP-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}.zip UIP.exe
+            7z a -tzip SJTUmat-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}.zip SJTUmat.exe
           elif [ "${{ runner.os }}" == "macOS" ]; then
-            zip -r UIP-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}.zip UIP.app
+            zip -r SJTUmat-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}.zip SJTUmat.app
           else
-            tar -czvf UIP-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}.tar.gz UIP
+            tar -czvf SJTUmat-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}.tar.gz SJTUmat
           fi
         shell: bash
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: UIP-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}
-          path: dist/UIP-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}.*
+          name: SJTUmat-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}
+          path: dist/SJTUmat-${{ runner.os }}-${{ matrix.arch }}-${{ github.ref_name }}.*
 
   release:
     needs: build
